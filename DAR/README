@@ -1,0 +1,19 @@
+This directory contains the following subdirectories:
+1) design - subdirectory with design source files
+2) include - subdirectory with design definitions
+   The include files are separate, so you may include them in your testbench code.
+3) obj - here you will put your compiled files.
+4) reports - here you will store your simulation output logs.
+5) testbench - subdirectory with the verification code
+   You should modify audio_app.test_top.sv in this directory,
+   and you can also create your own source code if you need.
+
+make command options
+1) make: compile source code for the DAR design and your testbench.
+2) make run: run simulation
+3) make dve: compile source code and run DVE (a GUI enviroment).
+4) make clean: remove all the object files
+
+NOTE: run first 'make', then 'make run'.
+      If you want to use DVE, simply run 'make dve'.
+
