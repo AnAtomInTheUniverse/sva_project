@@ -13,15 +13,15 @@ module arbiter ( request, grant, reset, clk ) ;
               (~request[1] | last_winner) ) ;
   assign next_grant[1]
     = ~reset & ( request[1] &
-              (~request[0] | last_winner) ) ;
+              (~request[0] | ~last_winner) ) ; // Changed last_winner -> ~last_winner
 
   assign winner 
     = ~reset &  ~next_grant[0] & 
               ( last_winner | next_grant[1] ) ;
 
   always @(posedge clk) begin
-    last_winner = winner ;
-    grant = next_grant ;
+    last_winner <= winner ;         // Added non-blocking
+    grant       <= next_grant ;     // Added non-blocking
   end
 
 endmodule
