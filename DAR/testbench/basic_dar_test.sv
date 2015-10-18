@@ -49,19 +49,42 @@ module audio_app_test_top;
     prgrm_in 		= 1'b0;
 	prgrm_go_		= 1'b1;
 
-	repeat(10) @(posedge SystemClock);
+	repeat (10) @(posedge SystemClock);
     SystemReset_ = 1'b1;
+	di_0			= 16'h00f8;
+	di_1			= 16'h0;
+	di_2			= 16'h0;
+	di_3			= 16'h0;
 
 	@(posedge SystemClock);
-	prgrm_go	=	1'b0;
-	prgram_in_	=	1'b0;
+	prgrm_in	=	1'b1;
+	prgrm_go_	=	1'b0;
+	@(posedge SystemClock);
+    prgrm_in	=	1'b0;
+	@(posedge SystemClock);
+    prgrm_in	=	1'b0;
+	prgrm_go_	=	1'b1;
+	@(posedge SystemClock);
+    prgrm_in	=	1'b1;
+	@(posedge SystemClock);
+    prgrm_in	=	1'b1;
+	@(posedge SystemClock);
+    prgrm_in	=	1'b1;
 
 	@(posedge SystemClock);
-    // terminate simulation
+	prgrm_go_	=	1'b1;
+
+	@(posedge SystemClock);
+	di_0 	=	16'hff00;
+	@(posedge SystemClock);
+	di_0 	=	16'h0123;
+
+	// terminate simulation
     // FIXME: change simulation time if necessary
-    #1000000 $finish;
+    #10000 $finish;
   end
-  
+
+ 
   //initial begin
   //  $dumpfile("./obj/verilog.dump");
   //  $dumpvars(0,audio_app_test_top);
@@ -70,20 +93,7 @@ module audio_app_test_top;
   //
   // CREATE YOUR TESTBENCH BELOW
   //
-
-  //-------------------------------------
-  //		 ASSERTIONS
-  //-------------------------------------
   
-  //Reset Assertions
-
-
-  //----------
-
-  //Err Signal Assertions
-  // prgrm_go cannot be deasserted (1'b1) during the 6 cycles of delay programming
-  prop_prgrm_go_deasserted: assert property (@(posedge SystemClock) disabele iff (!SystemReset_) prgrm_go ##1 !prgrm_go ##[1:5] prgram_go |=> !err_);
-  // err_ should assert (1'b0) if bit0 of prgrm_in is 1 during programming 
-  // since Read mode is not supported by design
-  prop_prgrm_rd_err: assert property (@(posedge SystemClock) disable iff (!SystemReset_) (err_ && prgrm_go) ##1 (!prgrm_go && prgrm_in) |=> !err_);
+  prop_prgrm_go_deasserted: assert property (@(posedge SystemClock) disable iff (!SystemReset_) ((prgrm_go_ ##1 !prgrm_go_) ##[1:5] prgrm_go_ )|=> !err_);
+  prop_prgrm_rd_err: assert property (@(posedge SystemClock) disable iff (!SystemReset_) (err_ && prgrm_go_) ##1 (!prgrm_go_ && prgrm_in) |=> !err_);
 endmodule
