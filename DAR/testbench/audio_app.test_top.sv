@@ -51,12 +51,42 @@ module audio_app_test_top;
 
 	repeat(10) @(posedge SystemClock);
     SystemReset_ = 1'b1;
+	
 
+	// Reset Signal Testing
+	// Feed in non-zero values to each delay line
+	// Set delay to 7 and then assert reset - Make
+	// sure that all of the outputs are 0 after 
+	// after reset asserts
 	@(posedge SystemClock);
-	prgrm_go	=	1'b0;
-	prgram_in_	=	1'b0;
+	di_0	=	16'h00_11;
+	di_1	=	16'h00_22;
+	di_2	=	16'h00_44;
+	di_3	=	16'h00_88;
+	for(int i = 0; i < 4; i++) begin
+		@(posedge SystemClock);
+		prgrm_go_	=	1'b0;
+		prgrm_in	=	1'b0;
+		@(posedge SystemClock);
+		prgrm_in	=	(i%2) ? 1'b1: 1'b0;
+		@(posedge SystemClock);
+		prgrm_in	=	(i/2) ? 1'b1: 1'b0;
+		@(posedge SystemClock);
+		prgrm_in	=	1'b1;
+		@(posedge SystemClock);
+		prgrm_in	=	1'b1;
+		@(posedge SystemClock);
+		prgrm_in	=	1'b1;
+		@(posedge SystemClock);
+		prgrm_go_	=	1'b1;
+	end
 
-	@(posedge SystemClock);
+
+	repeat(6) @(posedge SystemClock);
+	SystemReset_	=	1'b0;
+
+	repeat(2) @(posedge SystemClock);
+	SystemReset_	=	1'b1;
     // terminate simulation
     // FIXME: change simulation time if necessary
     #1000000 $finish;
@@ -75,15 +105,23 @@ module audio_app_test_top;
   //		 ASSERTIONS
   //-------------------------------------
   
+  //----------
   //Reset Assertions
+  //----------
+   prop_assert_rst_: assert property (@(posedge SystemClock) (SystemReset_ ##1 !SystemReset_) |=> (do_0 == 16'h0000) && (do_1 == 16'h0000) && (do_2 == 16'h0000) && (do_3 == 16'h0000));
 
+  //----------
+  //Err Signal Assertions
+  //----------
+  // prgrm_go cannot be deasserted (1'b1) during the 6 cycles of delay programming
+  prop_prgrm_go_deasserted: assert property (@(posedge SystemClock) disable iff (!SystemReset_) ((prgrm_go_ ##1 !prgrm_go_) ##[1:5] prgrm_go_ )|=> !err_);
+  // err_ should assert (1'b0) if bit0 of prgrm_in is 1 during programming 
+  // since Read mode is not supported by design
+  prop_prgrm_rd_err: assert property (@(posedge SystemClock) disable iff (!SystemReset_) (err_ && prgrm_go_) ##1 (!prgrm_go_ && prgrm_in) |=> !err_);
 
   //----------
 
-  //Err Signal Assertions
-  // prgrm_go cannot be deasserted (1'b1) during the 6 cycles of delay programming
-  prop_prgrm_go_deasserted: assert property (@(posedge SystemClock) disabele iff (!SystemReset_) prgrm_go ##1 !prgrm_go ##[1:5] prgram_go |=> !err_);
-  // err_ should assert (1'b0) if bit0 of prgrm_in is 1 during programming 
-  // since Read mode is not supported by design
-  prop_prgrm_rd_err: assert property (@(posedge SystemClock) disable iff (!SystemReset_) (err_ && prgrm_go) ##1 (!prgrm_go && prgrm_in) |=> !err_);
+
+
+
 endmodule

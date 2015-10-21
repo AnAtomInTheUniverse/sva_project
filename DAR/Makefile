@@ -7,8 +7,8 @@ VCSFLAGS = +v2k -sverilog -line -full64 +incdir+./include
 #-l ./reports/vcs.log
 
 DESIGN = design/audio_app.v design/delay_line.v design/delay_prgrm.v
-#TESTBENCH = testbench/audio_app.test_top.sv
-TESTBENCH = testbench/basic_dar_test.sv
+TESTBENCH = testbench/audio_app.test_top.sv
+#TESTBENCH = testbench/basic_dar_test.sv
 
 all: simv
 

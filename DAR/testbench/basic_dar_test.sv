@@ -63,7 +63,6 @@ module audio_app_test_top;
     prgrm_in	=	1'b0;
 	@(posedge SystemClock);
     prgrm_in	=	1'b0;
-	prgrm_go_	=	1'b1;
 	@(posedge SystemClock);
     prgrm_in	=	1'b1;
 	@(posedge SystemClock);
@@ -96,4 +95,6 @@ module audio_app_test_top;
   
   prop_prgrm_go_deasserted: assert property (@(posedge SystemClock) disable iff (!SystemReset_) ((prgrm_go_ ##1 !prgrm_go_) ##[1:5] prgrm_go_ )|=> !err_);
   prop_prgrm_rd_err: assert property (@(posedge SystemClock) disable iff (!SystemReset_) (err_ && prgrm_go_) ##1 (!prgrm_go_ && prgrm_in) |=> !err_);
+
+  prop_assert_rst_: assert property (@(posedge SystemClock) (SystemReset_ ##1 !SystemReset_) |=> (do_0 == 16'h0000) && (do_1 == 16'h0000) && (do_2 == 16'h0000) && (do_3 == 16'h0000));
 endmodule
