@@ -1,0 +1,47 @@
+------------------------------
+EECS 578 Fall 2015 SVA Project
+	Amlan Nayak (amlan)
+			README
+-----------------------------
+
+-------
+Arbiter
+-------
+The fixed design file arbiter.v and the 
+testbench which was used to detect the 
+design errors test_arbiter.v are included
+in this tarball. 
+
+
+----------
+DAR Module
+----------
+The only file that was modified for verifying
+the DAR module was audio_app.test_top.sv. All
+of the tests are contained within that file
+and so are all of the assertions. No other source
+files are needed. In order to execute the testbench,
+first use 
+		> make all 
+to compile the design and the testbench, followed by
+		> make run
+		or
+		>./simv
+to run the testbench. Assertions should fire when 
+they detect an error and produce a console output. 
+Two assertions fail, corresponding to a design 
+error in the err_ signal. Clearly, as seen in line
+68 of the delay_prgrm.sv file in /DAR/design/, 
+the err_ flop is assigned to err_ instead of nxt_err.
+This is the bug. 
+
+A screenshot is included in this tarball ("assert_fail.png")
+which showcases the output of the two assertions failing
+during simulation, which highlight this bug.
+
+A second screenshot ("register_rst_visual.png")
+showcases all of the delay registers of each delay
+line being reset to 0 when rst is SystemReset_ is asserted.
+This was verified through visual inspection of 
+the waveforms.
+
